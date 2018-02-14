@@ -1,7 +1,7 @@
 {
   "name": "colbycomms/wp-multipage-panel",
   "description":
-    "A shortcode for a panel with a background image and a superimposed content block.",
+    "HTML, JS, and CSS for a tabbable content area in which one of an unlimited number of sections shows at a time.",
   "type": "library",
   "require": {
     "php": "^7.1"
