@@ -20,4 +20,4 @@ Clone this repository into your plugins directory and activate it through the Wo
 
 ## Usage
 
-// To do
+// To-do
