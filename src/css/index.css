@@ -1,0 +1,14 @@
+.wp-block-multipage-panel-multipage-panel {
+  overflow: hidden;
+}
+
+.wp-block-multipage-panel-multipage-panel__inner {
+  display: flex;
+  align-items: flex-start;
+  transition: height 0.2s;
+}
+
+.wp-block-multipage-panel-multipage-panel__inner > * {
+  width: 100%;
+  min-width: 100%;
+}
