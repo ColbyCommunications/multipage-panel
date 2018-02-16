@@ -169,7 +169,6 @@ var initPage = function initPage(_ref2) {
   }
 
   var togglers = [].concat(_toConsumableArray(document.querySelectorAll(getHrefSelector(id))));
-  console.log(togglers);
   allTogglers = allTogglers.concat(togglers);
   ensureTogglerAria(togglers);
 

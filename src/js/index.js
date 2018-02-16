@@ -81,7 +81,6 @@ const initPage = ({
   }
 
   const togglers = [...document.querySelectorAll(getHrefSelector(id))];
-  console.log(togglers);
   allTogglers = allTogglers.concat(togglers);
   ensureTogglerAria(togglers);
 
