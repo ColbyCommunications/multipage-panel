@@ -1,3 +1,7 @@
+import smoothscrollPolyfill from 'smoothscroll-polyfill';
+
+smoothscrollPolyfill.polyfill();
+
 const TABBABLE_ELEMENTS = 'a, area, button, object, select, textarea';
 let allTogglers = [];
 
@@ -58,7 +62,14 @@ const getHrefSelector = id => {
   }
 };
 
-const initPage = ({ i, pages, page, container, activePageIndex }) => {
+const initPage = ({
+  i,
+  pages,
+  page,
+  container,
+  containerBar,
+  activePageIndex,
+}) => {
   const id = page.getAttribute('id');
 
   if (!id) {
@@ -86,6 +97,7 @@ const initPage = ({ i, pages, page, container, activePageIndex }) => {
       deactivateTogglers();
       activateTogglers(togglers);
       history.replaceState(null, null, `#${id}`);
+      containerBar.scrollIntoView({ behavior: 'smooth' });
     });
   });
 };
@@ -115,11 +127,13 @@ const getActivePageIndex = pages => {
 };
 
 const initMultipagePanel = container => {
+  const containerBar = document.createElement('DIV');
+  container.parentNode.insertBefore(containerBar, container);
   const pages = [...document.querySelectorAll('[data-multipage-panel-page]')];
 
   const activePageIndex = getActivePageIndex(pages);
   pages.forEach((page, i) => {
-    initPage({ i, page, pages, container, activePageIndex });
+    initPage({ i, page, pages, container, activePageIndex, containerBar });
   });
 };
 
