@@ -146,9 +146,11 @@ var activatePage = function activatePage(page) {
 
 var getHrefSelector = function getHrefSelector(id) {
   try {
-    return '[href="' + window.location.href + '#' + id + '"], [href="' + window.location.href + '/#' + id + '"], [href="#' + id + '"]';
+    return '[href="' + window.location.origin + window.location.pathname + '#' + id + '"], [href="' + window.location.origin + window.location.pathname + '/#' + id + '"], [href="#' + id + '"]';
   } catch (e) {
-    return '[href="#' + id + '"]';
+    if (e.message === 'window is not defined') {
+      return '[href="#' + id + '"]';
+    }
   }
 };
 
@@ -167,6 +169,7 @@ var initPage = function initPage(_ref2) {
   }
 
   var togglers = [].concat(_toConsumableArray(document.querySelectorAll(getHrefSelector(id))));
+  console.log(togglers);
   allTogglers = allTogglers.concat(togglers);
   ensureTogglerAria(togglers);
 
@@ -216,9 +219,14 @@ var getActivePageIndex = function getActivePageIndex(pages) {
   return 0;
 };
 
-var initMultipagePanel = function initMultipagePanel(container) {
+var makeContainerBar = function makeContainerBar(container) {
   var containerBar = document.createElement('DIV');
   container.parentNode.insertBefore(containerBar, container);
+  return containerBar;
+};
+
+var initMultipagePanel = function initMultipagePanel(container) {
+  var containerBar = makeContainerBar(container);
   var pages = [].concat(_toConsumableArray(document.querySelectorAll('[data-multipage-panel-page]')));
 
   var activePageIndex = getActivePageIndex(pages);

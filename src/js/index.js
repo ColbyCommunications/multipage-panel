@@ -54,11 +54,15 @@ const activatePage = page => {
 
 const getHrefSelector = id => {
   try {
-    return `[href="${window.location.href}#${id}"], [href="${
-      window.location.href
+    return `[href="${window.location.origin}${
+      window.location.pathname
+    }#${id}"], [href="${window.location.origin}${
+      window.location.pathname
     }/#${id}"], [href="#${id}"]`;
   } catch (e) {
-    return `[href="#${id}"]`;
+    if (e.message === 'window is not defined') {
+      return `[href="#${id}"]`;
+    }
   }
 };
 
@@ -77,6 +81,7 @@ const initPage = ({
   }
 
   const togglers = [...document.querySelectorAll(getHrefSelector(id))];
+  console.log(togglers);
   allTogglers = allTogglers.concat(togglers);
   ensureTogglerAria(togglers);
 
@@ -126,9 +131,14 @@ const getActivePageIndex = pages => {
   return 0;
 };
 
-const initMultipagePanel = container => {
+const makeContainerBar = container => {
   const containerBar = document.createElement('DIV');
   container.parentNode.insertBefore(containerBar, container);
+  return containerBar;
+};
+
+const initMultipagePanel = container => {
+  const containerBar = makeContainerBar(container);
   const pages = [...document.querySelectorAll('[data-multipage-panel-page]')];
 
   const activePageIndex = getActivePageIndex(pages);

@@ -54,7 +54,7 @@ class PageBlock {
 
 		ob_start();
 		?>
-	<div data-multipage-panel-page id="<?php echo esc_attr( $atts['id'] ); ?>"<?php echo $class; ?>>
+	<div data-multipage-panel-page id="<?php echo esc_attr( $options['id'] ); ?>"<?php echo $class; ?>>
 		<?php echo $content; ?>
 	</div>
 		<?php

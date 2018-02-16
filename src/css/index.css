@@ -11,4 +11,5 @@
 .wp-block-multipage-panel-multipage-panel__inner > * {
   width: 100%;
   min-width: 100%;
+  max-height: none !important;
 }

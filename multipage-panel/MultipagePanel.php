@@ -54,6 +54,13 @@ class MultipagePanel {
 	const ENQUEUE_STYLE_FILTER = self::FILTER_NAMESPACE . 'enqueue_style';
 
 	/**
+	 * Filter name for whether to enqueue this plugin's script.
+	 *
+	 * @var string
+	 */
+	const ENQUEUE_SCRIPT_FILTER = self::FILTER_NAMESPACE . 'enqueue_script';
+
+	/**
 	 * Filter name for this plugin's dist directory.
 	 *
 	 * @var string
@@ -79,9 +86,10 @@ class MultipagePanel {
 	 */
 	public function __construct() {
 		add_action( 'init', [ __CLASS__, 'register_shortcodes' ] );
-		add_action( 'init', [ __CLASS__, 'register_style' ] );
+		add_action( 'init', [ __CLASS__, 'register_style_and_script' ] );
 		add_action( 'wp_enqueue_scripts', [ __CLASS__, 'enqueue_style' ] );
-		add_filter( 'template_redirect', [ __CLASS__, 'maybe_disable_style' ] );
+		add_action( 'wp_enqueue_scripts', [ __CLASS__, 'enqueue_script' ] );
+		add_filter( 'template_redirect', [ __CLASS__, 'maybe_disable_style_and_script' ] );
 	}
 
 	/**
@@ -95,13 +103,20 @@ class MultipagePanel {
 	/**
 	 * Registers the plugin's style.
 	 */
-	public static function register_style() {
+	public static function register_style_and_script() {
 		$min  = self::PROD === true ? '.min' : '';
 		$dist = self::get_dist_directory();
 
 		wp_register_style(
 			self::TEXT_DOMAIN,
 			"$dist/" . self::TEXT_DOMAIN . "$min.css",
+			[],
+			self::VERSION
+		);
+
+		wp_register_script(
+			self::TEXT_DOMAIN,
+			"$dist/" . self::TEXT_DOMAIN . "$min.js",
 			[],
 			self::VERSION
 		);
@@ -124,9 +139,25 @@ class MultipagePanel {
 	}
 
 	/**
+	 * Enqueue the script.
+	 */
+	public static function enqueue_script() {
+		/**
+		 * Filters whether to enqueue this plugin's script.
+		 *
+		 * @param bool Yes or no.
+		 */
+		if ( apply_filters( self::ENQUEUE_SCRIPT_FILTER, true ) !== true ) {
+			return;
+		}
+
+		wp_enqueue_script( self::TEXT_DOMAIN );
+	}
+
+	/**
 	 * Disable the stylesheet if the shortcode is not present.
 	 */
-	public static function maybe_disable_style() {
+	public static function maybe_disable_style_and_script() {
 		global $post;
 
 		if ( empty( $post ) ) {
@@ -140,7 +171,15 @@ class MultipagePanel {
 		add_filter(
 			self::ENQUEUE_STYLE_FILTER, function() {
 				return false;
-			}, 1
+			},
+			1
+		);
+
+		add_filter(
+			self::ENQUEUE_SCRIPT_FILTER, function() {
+				return false;
+			},
+			1
 		);
 	}
 
