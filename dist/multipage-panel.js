@@ -82,117 +82,15 @@ var _smoothscrollPolyfill = __webpack_require__(2);
 
 var _smoothscrollPolyfill2 = _interopRequireDefault(_smoothscrollPolyfill);
 
+var _MultipagePanel = __webpack_require__(8);
+
+var _MultipagePanel2 = _interopRequireDefault(_MultipagePanel);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 _smoothscrollPolyfill2.default.polyfill();
-
-var TABBABLE_ELEMENTS = 'a, area, button, object, select, textarea';
-var allTogglers = [];
-
-var setContainerStyles = function setContainerStyles(_ref) {
-  var container = _ref.container,
-      page = _ref.page,
-      i = _ref.i;
-
-  container.style.transform = 'translate3d(-' + i + '00%, 0, 0)';
-  container.style.height = page.clientHeight + 'px';
-};
-
-var deactivateTogglers = function deactivateTogglers() {
-  var togglers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : allTogglers;
-
-  togglers.forEach(function (toggler) {
-    toggler.classList.remove('active');
-    toggler.setAttribute('aria-pressed', false);
-  });
-};
-
-var activateTogglers = function activateTogglers(togglers) {
-  togglers.forEach(function (toggler) {
-    toggler.classList.add('active');
-    toggler.setAttribute('aria-pressed', true);
-  });
-};
-
-var ensureTogglerAria = function ensureTogglerAria(togglers) {
-  togglers.forEach(function (toggler) {
-    if (!toggler.hasAttribute('role')) {
-      toggler.setAttribute('role', 'button');
-    }
-
-    if (!toggler.hasAttribute('aria-pressed')) {
-      toggler.setAttribute('aria-pressed', false);
-    }
-  });
-};
-
-var deactivatePages = function deactivatePages(pages) {
-  pages.forEach(function (page) {
-    page.setAttribute('aria-hidden', true);
-    [].concat(_toConsumableArray(page.querySelectorAll(TABBABLE_ELEMENTS))).forEach(function (element) {
-      element.setAttribute('tabindex', -1);
-    });
-  });
-};
-
-var activatePage = function activatePage(page) {
-  page.setAttribute('aria-hidden', false);
-  [].concat(_toConsumableArray(page.querySelectorAll(TABBABLE_ELEMENTS))).forEach(function (element) {
-    element.setAttribute('tabindex', 0);
-  });
-};
-
-var getHrefSelector = function getHrefSelector(id) {
-  try {
-    return '[href="' + window.location.origin + window.location.pathname + '#' + id + '"], [href="' + window.location.origin + window.location.pathname + '/#' + id + '"], [href="#' + id + '"]';
-  } catch (e) {
-    if (e.message === 'window is not defined') {
-      return '[href="#' + id + '"]';
-    }
-  }
-};
-
-var initPage = function initPage(_ref2) {
-  var i = _ref2.i,
-      pages = _ref2.pages,
-      page = _ref2.page,
-      container = _ref2.container,
-      containerBar = _ref2.containerBar,
-      activePageIndex = _ref2.activePageIndex;
-
-  var id = page.getAttribute('id');
-
-  if (!id) {
-    return;
-  }
-
-  var togglers = [].concat(_toConsumableArray(document.querySelectorAll(getHrefSelector(id))));
-  allTogglers = allTogglers.concat(togglers);
-  ensureTogglerAria(togglers);
-
-  // Run setup for initial state -- the first page is active.
-  if (i === activePageIndex) {
-    setContainerStyles({ container: container, page: page, i: i });
-    activateTogglers(togglers);
-    deactivatePages(pages);
-    activatePage(page);
-  }
-
-  togglers.forEach(function (toggler) {
-    toggler.addEventListener('click', function (event) {
-      event.preventDefault();
-      setContainerStyles({ container: container, page: page, i: i });
-      deactivatePages(pages);
-      activatePage(page);
-      deactivateTogglers();
-      activateTogglers(togglers);
-      history.replaceState(null, null, '#' + id);
-      containerBar.scrollIntoView({ behavior: 'smooth' });
-    });
-  });
-};
 
 var getPageHash = function getPageHash() {
   try {
@@ -225,13 +123,18 @@ var makeContainerBar = function makeContainerBar(container) {
 };
 
 var initMultipagePanel = function initMultipagePanel(container) {
-  var containerBar = makeContainerBar(container);
   var pages = [].concat(_toConsumableArray(document.querySelectorAll('[data-multipage-panel-page]')));
 
-  var activePageIndex = getActivePageIndex(pages);
-  pages.forEach(function (page, i) {
-    initPage({ i: i, page: page, pages: pages, container: container, activePageIndex: activePageIndex, containerBar: containerBar });
+  var mpp = new _MultipagePanel2.default({
+    container: container,
+    pages: pages,
+    scrollToElement: makeContainerBar(container),
+    activeIndex: getActivePageIndex(pages)
   });
+
+  if (mpp.shouldRun()) {
+    mpp.run();
+  }
 };
 
 var initMultipagePanels = function initMultipagePanels() {
@@ -622,6 +525,202 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 4 */,
+/* 5 */,
+/* 6 */,
+/* 7 */,
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var TABBABLE_ELEMENTS = 'a, area, button, object, select, textarea';
+
+var MultipagePanel = function () {
+  _createClass(MultipagePanel, null, [{
+    key: 'getHrefSelector',
+    value: function getHrefSelector(id) {
+      try {
+        return '[href="' + window.location.origin + window.location.pathname + '#' + id + '"], [href="' + window.location.origin + window.location.pathname + '/#' + id + '"], [href="#' + id + '"]';
+      } catch (e) {
+        if (e.message === 'window is not defined') {
+          return '[href="#' + id + '"]';
+        }
+      }
+    }
+  }]);
+
+  function MultipagePanel(_ref) {
+    var _this = this;
+
+    var container = _ref.container,
+        scrollToElement = _ref.scrollToElement,
+        pages = _ref.pages,
+        _ref$activeIndex = _ref.activeIndex,
+        activeIndex = _ref$activeIndex === undefined ? 0 : _ref$activeIndex;
+
+    _classCallCheck(this, MultipagePanel);
+
+    this.activateTogglers = function (togglers) {
+      togglers.forEach(_this.activateToggler);
+    };
+
+    this.initPage = this.initPage.bind(this);
+    this.setContainerStyle = this.setContainerStyle.bind(this);
+    this.handleTogglerClick = this.handleTogglerClick.bind(this);
+
+    this.allTogglers = [];
+    this.container = container;
+    this.pages = pages;
+    this.scrollToElement = scrollToElement;
+    this.activeIndex = activeIndex;
+  }
+
+  _createClass(MultipagePanel, [{
+    key: 'shouldRun',
+    value: function shouldRun() {
+      return this.container && this.pages.length;
+    }
+  }, {
+    key: 'run',
+    value: function run() {
+      this.pages.forEach(this.initPage);
+      this.ensureTogglersHaveAriaAttributes();
+      this.startContainerStylePing();
+    }
+  }, {
+    key: 'setContainerStyle',
+    value: function setContainerStyle() {
+      var transform = 'translate3d(-' + this.activeIndex + '00%, 0, 0)';
+      var height = this.pages[this.activeIndex].clientHeight + 'px';
+
+      if (this.container.style.transform !== transform) {
+        this.container.style.transform = transform;
+      }
+
+      if (this.container.style.height !== height) {
+        this.container.style.height = height;
+      }
+    }
+  }, {
+    key: 'startContainerStylePing',
+    value: function startContainerStylePing() {
+      setInterval(this.setContainerStyle, 100);
+    }
+  }, {
+    key: 'deactivatePage',
+    value: function deactivatePage(page) {
+      page.setAttribute('aria-hidden', true);
+      [].concat(_toConsumableArray(page.querySelectorAll(TABBABLE_ELEMENTS))).forEach(function (element) {
+        element.setAttribute('tabindex', -1);
+      });
+    }
+  }, {
+    key: 'deactivatePages',
+    value: function deactivatePages() {
+      var pages = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.pages;
+
+      pages.forEach(this.deactivatePage);
+    }
+  }, {
+    key: 'activatePage',
+    value: function activatePage() {
+      var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.pages[this.activeIndex];
+
+      page.setAttribute('aria-hidden', false);
+      [].concat(_toConsumableArray(page.querySelectorAll(TABBABLE_ELEMENTS))).forEach(function (element) {
+        element.setAttribute('tabindex', 0);
+      });
+    }
+  }, {
+    key: 'deactivateToggler',
+    value: function deactivateToggler(toggler) {
+      toggler.classList.remove('active');
+      toggler.setAttribute('aria-pressed', false);
+    }
+  }, {
+    key: 'deactivateTogglers',
+    value: function deactivateTogglers(togglers) {
+      togglers.forEach(this.deactivateToggler);
+    }
+  }, {
+    key: 'activateToggler',
+    value: function activateToggler(toggler) {
+      toggler.classList.add('active');
+      toggler.setAttribute('aria-pressed', true);
+    }
+  }, {
+    key: 'handleTogglerClick',
+    value: function handleTogglerClick(_ref2) {
+      var event = _ref2.event,
+          i = _ref2.i,
+          togglers = _ref2.togglers;
+
+      event.preventDefault();
+      this.activeIndex = i;
+      this.deactivatePages();
+      this.activatePage();
+      this.deactivateTogglers(togglers);
+      this.activateTogglers(togglers);
+
+      history.replaceState(null, null, '#' + id);
+
+      if (this.scrollToElement) {
+        this.scrollToElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, {
+    key: 'initPage',
+    value: function initPage(page, i) {
+      var _this2 = this;
+
+      var id = page.getAttribute('id');
+
+      if (!id) {
+        return;
+      }
+
+      var togglers = [].concat(_toConsumableArray(document.querySelectorAll(MultipagePanel.getHrefSelector(id))));
+      this.allTogglers = this.allTogglers.concat(togglers);
+
+      togglers.forEach(function (toggler) {
+        toggler.addEventListener('click', function (event) {
+          return _this2.handleTogglerClick({ event: event, i: i, togglers: togglers });
+        });
+      });
+    }
+  }, {
+    key: 'ensureTogglersHaveAriaAttributes',
+    value: function ensureTogglersHaveAriaAttributes() {
+      this.allTogglers.forEach(function (toggler) {
+        if (!toggler.hasAttribute('role')) {
+          toggler.setAttribute('role', 'button');
+        }
+
+        if (!toggler.hasAttribute('aria-pressed')) {
+          toggler.setAttribute('aria-pressed', false);
+        }
+      });
+    }
+  }]);
+
+  return MultipagePanel;
+}();
+
+exports.default = MultipagePanel;
 
 /***/ })
 /******/ ]);
