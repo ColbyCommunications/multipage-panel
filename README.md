@@ -20,4 +20,27 @@ Clone this repository into your plugins directory and activate it through the Wo
 
 ## Usage
 
-// To-do
+### With shortcodes
+
+This library provides two WordPress shortcodes.
+
+#### `multipage-panel`
+
+This shortcode takes no attributes. It is expected to contain at least one instance of the `multipage-panel-page` shortcode, so nothing is rendered if the closing shortcode tag is missing.
+
+#### `multipage-panel-page`
+
+This shortcode takes one required attribute, `id`, which generate's the element container's HTML ID. Content is required; if the shortcode has no content, nothing is rendered.
+
+#### Example
+
+```HTML
+[multipage-panel]
+  [multipage-panel-page id="schedule"]
+    // HTML content.
+  [/multipage-panel-page]
+  [multipage-panel-page id="map"]
+    // HTML content.
+  [/multipage-panel-page]
+[/multipage-panel]
+```
