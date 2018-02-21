@@ -31,6 +31,7 @@ class Block {
 	 * @return string The generated HTML.
 	 */
 	public static function render( $options = [], $content = '' ) : string {
+		$options = is_array( $options ) ? $options : [];
 		$options = array_merge( self::OPTIONS_DEFAULTS, $options );
 		$content = function_exists( 'apply_filters' )
 			? apply_filters( 'the_content', $content )
